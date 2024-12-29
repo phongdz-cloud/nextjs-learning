@@ -1,3 +1,5 @@
+import Header from "@/app/Header";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 export default function Home() {
@@ -21,6 +23,7 @@ export default function Home() {
             .
           </li>
           <li>Save and see your changes instantly.</li>
+          <Button>Hello next hoài phong</Button>
         </ol>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
