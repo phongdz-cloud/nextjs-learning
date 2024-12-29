@@ -5,6 +5,7 @@ import "./globals.css";
 // const roboto = Roboto({ subsets: ["vietnamese"], weight: ["100", "300"] });
 
 import localFont from "next/font/local";
+import Header from "@/app/Header";
 
 const myFont = localFont({
   src: [
@@ -36,6 +37,7 @@ export default function RootLayout({
         // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         className={` ${myFont.variable} antialiased`}
       >
+        <Header />
         {children}
       </body>
     </html>

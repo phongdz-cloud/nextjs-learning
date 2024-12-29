@@ -1,5 +1,7 @@
+import React from "react";
+
 const Header = () => {
-  return <>Header</>;
+  return <div>Header</div>;
 };
 
 export default Header;
