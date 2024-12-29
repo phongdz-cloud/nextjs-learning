@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppContext } from "@/app/AppProvider";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,6 +19,7 @@ import { useForm } from "react-hook-form";
 
 const LoginForm = () => {
   const toast = useToast().toast;
+  const { setSessionToken } = useAppContext();
   // 1. Define your form.
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -52,11 +54,29 @@ const LoginForm = () => {
 
         return data;
       });
+      const resultFromNextServer = fetch("/api/auth", {
+        method: "POST",
+        body: JSON.stringify(result.payload),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then(async (res) => {
+        const payload = await res.json();
+        const data = {
+          status: res.status,
+          payload,
+        };
+        if (!res.ok) {
+          throw data;
+        }
+
+        return data;
+      });
       debugger;
+      setSessionToken((await resultFromNextServer).payload.token);
       toast({
         description: result.payload.message,
       });
-      console.log(result);
     } catch (e) {
       const errors = (e as any).payload.errors as {
         field: string;
