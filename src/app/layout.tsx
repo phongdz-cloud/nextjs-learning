@@ -1,25 +1,11 @@
 import type { Metadata } from "next";
-// import { Roboto } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-// const roboto = Roboto({ subsets: ["vietnamese"], weight: ["100", "300"] });
+import { ThemeProvider } from "@/components/theme-provider";
+import Header from "@/components/header";
 
-import localFont from "next/font/local";
-import Header from "@/app/Header";
-
-const myFont = localFont({
-  src: [
-    {
-      path: "./Roboto-Thin.ttf",
-      weight: "100",
-    },
-    {
-      path: "./Roboto-Regular.ttf",
-      weight: "400",
-    },
-  ],
-  variable: "--font-roboto",
-});
+const inter = Inter({ subsets: ["vietnamese"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -32,14 +18,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        className={` ${myFont.variable} antialiased`}
-      >
-        <Header />
-        {children}
-      </body>
-    </html>
+    <>
+      <html lang="en" suppressHydrationWarning>
+        <head />
+        <body className={` ${inter.className} antialiased`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
+
+            {children}
+          </ThemeProvider>
+        </body>
+      </html>
+    </>
   );
 }
