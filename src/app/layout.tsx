@@ -1,9 +1,9 @@
+import Header from "@/components/header";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-
-import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/header";
 
 const inter = Inter({ subsets: ["vietnamese"] });
 
@@ -22,6 +22,8 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <head />
         <body className={` ${inter.className} antialiased`}>
+          <Toaster />
+
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

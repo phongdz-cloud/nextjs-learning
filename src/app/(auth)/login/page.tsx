@@ -1,5 +1,14 @@
+import LoginForm from "@/app/(auth)/login/login-form";
+
 export const LoginPage = () => {
-  return <div>Login Page </div>;
+  return (
+    <div>
+      <h1 className="text-xl font-semibold text-center">Login</h1>
+      <div className="flex justify-center">
+        <LoginForm />
+      </div>
+    </div>
+  );
 };
 
 export default LoginPage;
