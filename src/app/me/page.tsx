@@ -11,7 +11,7 @@ const MeProfile = async () => {
     <div>
       <h1>Profile</h1>
       <div>{JSON.stringify(result)}</div>
-      <Profile />
+      {/* <Profile /> */}
     </div>
   );
 };
