@@ -1,5 +1,5 @@
 "use client";
-
+import authApiRequest from "@/app/apiRequests/auth";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,15 +10,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import envConfig from "@/config";
+import { useToast } from "@/hooks/use-toast";
+import { sessionToken } from "@/lib/http";
 import {
   RegisterBody,
   RegisterBodyType,
 } from "@/schemaValidations/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 const RegisterForm = () => {
+  const { toast } = useToast();
+  const router = useRouter();
   // 1. Define your form.
   const form = useForm<RegisterBodyType>({
     resolver: zodResolver(RegisterBody),
@@ -32,16 +36,35 @@ const RegisterForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: RegisterBodyType) {
-    const result = await fetch(
-      `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`,
-      {
-        body: JSON.stringify(values),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+    try {
+      const result = await authApiRequest.register(values);
+      await authApiRequest.auth({ sessionToken: result.payload.data.token });
+      sessionToken.value = result.payload.data.token;
+      toast({
+        description: result.payload.message,
+      });
+      router.push("/me");
+    } catch (e) {
+      const errors = (e as any).payload.errors as {
+        field: string;
+        message: string;
+      }[];
+      const status = e.status as number;
+      if (status === 422) {
+        errors.forEach((error) => {
+          form.setError(error.field as "email" | "password", {
+            type: "server",
+            message: error.message,
+          });
+        });
+      } else {
+        toast({
+          title: "Đã xảy ra lỗi",
+          description: errors.map((error) => error.message).join(", "),
+          variant: "destructive",
+        });
       }
-    ).then((res) => res.json());
+    }
   }
 
   return (

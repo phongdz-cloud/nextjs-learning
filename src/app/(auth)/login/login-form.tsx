@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppContext } from "@/app/AppProvider";
+import authApiRequest from "@/app/apiRequests/auth";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,15 +11,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import envConfig from "@/config";
 import { useToast } from "@/hooks/use-toast";
 import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 const LoginForm = () => {
   const toast = useToast().toast;
-  const { setSessionToken } = useAppContext();
+  const router = useRouter();
   // 1. Define your form.
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -32,51 +32,13 @@ const LoginForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: LoginBodyType) {
     try {
-      const result = await fetch(
-        `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/login`,
-        {
-          body: JSON.stringify(values),
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then(async (res) => {
-        console.log(res);
-        const payload = await res.json();
-        const data = {
-          status: res.status,
-          payload,
-        };
-        if (!res.ok) {
-          throw data;
-        }
-
-        return data;
-      });
-      const resultFromNextServer = fetch("/api/auth", {
-        method: "POST",
-        body: JSON.stringify(result.payload),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then(async (res) => {
-        const payload = await res.json();
-        const data = {
-          status: res.status,
-          payload,
-        };
-        if (!res.ok) {
-          throw data;
-        }
-
-        return data;
-      });
+      const result = await authApiRequest.login(values);
+      await authApiRequest.auth({ sessionToken: result.payload.data.token });
       debugger;
-      setSessionToken((await resultFromNextServer).payload.token);
       toast({
         description: result.payload.message,
       });
+      router.push("/me");
     } catch (e) {
       const errors = (e as any).payload.errors as {
         field: string;
