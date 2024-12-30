@@ -1,7 +1,6 @@
 import ButtonLogout from "@/components/button-logout";
 import { ModeToggle } from "@/components/toggle-theme";
 import Link from "next/link";
-import React from "react";
 
 const Header = () => {
   return (

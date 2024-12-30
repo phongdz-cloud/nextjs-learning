@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AppProvider from "@/app/AppProvider";
 import { cookies } from "next/headers";
+import SlideSession from "@/components/slide-session";
 
 const inter = Inter({ subsets: ["vietnamese"] });
 
@@ -37,7 +38,7 @@ export default async function RootLayout({
           >
             <AppProvider initialSessionToken={sessionToken || ""}>
               <Header />
-
+              <SlideSession />
               {children}
             </AppProvider>
           </ThemeProvider>

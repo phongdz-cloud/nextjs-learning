@@ -1,5 +1,4 @@
 import accountApiRequest from "@/app/apiRequests/account";
-import Profile from "@/app/me/profile";
 import { cookies } from "next/headers";
 
 const MeProfile = async () => {

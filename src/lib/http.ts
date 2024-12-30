@@ -86,6 +86,7 @@ const request = async <Response>(
           await clientRequestLogout;
           clientRequestLogout = null;
           clientSessionToken.value = "";
+          clientSessionToken.expiresAt = new Date().toISOString();
           location.href = "/login";
         }
       } else {
@@ -106,8 +107,10 @@ const request = async <Response>(
       ["auth/login", "auth/register"].some((item) => item === normalizePathStr)
     ) {
       clientSessionToken.value = (payload as LoginResType).data.token;
+      clientSessionToken.expiresAt = (payload as LoginResType).data.expiresAt;
     } else if ("/auth/logout" === normalizePathStr) {
       clientSessionToken.value = "";
+      clientSessionToken.expiresAt = new Date().toISOString();
     }
   }
 
@@ -132,6 +135,7 @@ export class EntityError extends Error {
 
 class SessionToken {
   private token = "";
+  private _expiresAt = new Date().toISOString();
   get value() {
     return this.token;
   }
@@ -142,6 +146,17 @@ class SessionToken {
       throw new Error("Cannot set token in the browser");
     }
     this.token = token;
+  }
+
+  get expiresAt() {
+    return this._expiresAt;
+  }
+
+  set expiresAt(expiresAt: string) {
+    if (typeof window === "undefined") {
+      throw new Error("Cannot set token in the browser");
+    }
+    this._expiresAt = expiresAt;
   }
 }
 
