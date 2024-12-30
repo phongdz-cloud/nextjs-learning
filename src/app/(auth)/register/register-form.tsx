@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { sessionToken } from "@/lib/http";
 import { handleErrorApi } from "@/lib/utils";
 import {
   RegisterBody,
@@ -44,7 +43,6 @@ const RegisterForm = () => {
     try {
       const result = await authApiRequest.register(values);
       await authApiRequest.auth({ sessionToken: result.payload.data.token });
-      sessionToken.value = result.payload.data.token;
       toast({
         description: result.payload.message,
       });

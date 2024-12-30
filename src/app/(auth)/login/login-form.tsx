@@ -39,7 +39,6 @@ const LoginForm = () => {
     try {
       const result = await authApiRequest.login(values);
       await authApiRequest.auth({ sessionToken: result.payload.data.token });
-      debugger;
       toast({
         description: result.payload.message,
       });
