@@ -12,12 +12,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { handleErrorApi } from "@/lib/utils";
 import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const LoginForm = () => {
+  const [loading, setLoading] = useState(false);
   const toast = useToast().toast;
   const router = useRouter();
   // 1. Define your form.
@@ -31,6 +34,8 @@ const LoginForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: LoginBodyType) {
+    if (loading) return;
+    setLoading(true);
     try {
       const result = await authApiRequest.login(values);
       await authApiRequest.auth({ sessionToken: result.payload.data.token });
@@ -39,26 +44,14 @@ const LoginForm = () => {
         description: result.payload.message,
       });
       router.push("/me");
-    } catch (e) {
-      const errors = (e as any).payload.errors as {
-        field: string;
-        message: string;
-      }[];
-      const status = e.status as number;
-      if (status === 422) {
-        errors.forEach((error) => {
-          form.setError(error.field as "email" | "password", {
-            type: "server",
-            message: error.message,
-          });
-        });
-      } else {
-        toast({
-          title: "Đã xảy ra lỗi",
-          description: errors.map((error) => error.message).join(", "),
-          variant: "destructive",
-        });
-      }
+    } catch (e: any) {
+      handleErrorApi({
+        error: e,
+        setError: form.setError,
+        duration: 2000,
+      });
+    } finally {
+      setLoading(false);
     }
   }
 
